@@ -2,7 +2,7 @@ extends CharacterBody3D
 
 
 @export var manueverability := .001
-@export var maxSpeed := .5
+@export var maxSpeed := 2.0
 @export var acceleration := .02
 var flightMode: bool
 var dampeners: bool
@@ -68,15 +68,18 @@ func _physics_process(delta):
 			rotationalVelocity = rotationalVelocity.clamp(-maxRotationalVelocity,maxRotationalVelocity)
 		#RotationHandling
 		#print("After Application: " + str(rotationalVelocity))
-	rotation.z += rotationalVelocity.z
-	rotation.x += rotationalVelocity.rotated(Vector3(0,0,1),rotation.z).x
-	rotation.y += rotationalVelocity.rotated(Vector3(0,0,1),rotation.z).y
+	quaternion = quaternion * Quaternion(Vector3.BACK,rotationalVelocity.z)
+	quaternion = quaternion * Quaternion(Vector3.RIGHT,rotationalVelocity.x)
+	quaternion = quaternion * Quaternion(Vector3.UP,rotationalVelocity.y)
+	#rotation.z += rotationalVelocity.z
+	#rotation.x += rotationalVelocity.rotated(Vector3(0,0,1),rotation.z).x
+	#rotation.y += rotationalVelocity.rotated(Vector3(0,0,1),rotation.z).y
 	if dampeners:
-		print("PitchRollVector: " +str(pitchRollVector))
+		#print("PitchRollVector: " +str(pitchRollVector))
 		if pitchRollVector.y == 0 and rotationalVelocity.z != 0:
 			rotationalVelocity.z = move_toward(rotationalVelocity.z, 0, manueverability)
 		if pitchRollVector.x == 0 and rotationalVelocity.x != 0:
-			print("Slowing Pitch")
+			#print("Slowing Pitch")
 			rotationalVelocity.x = move_toward(rotationalVelocity.x, 0, manueverability)
 		if yawAxis == 0 and rotationalVelocity.y != 0:
 			rotationalVelocity.y = move_toward(rotationalVelocity.y,0,manueverability)
@@ -98,6 +101,8 @@ func _physics_process(delta):
 		#Limiter
 		throttleAmount = clamp(throttleAmount,-1.0,1.0)
 		
+		#Local Velocity Value
+		
 		#Apply Throttle to Velocity
 		if not safeMode:
 			frameVelocity.z += throttleAmount*acceleration
@@ -108,19 +113,26 @@ func _physics_process(delta):
 		frameVelocity.x += horizontalThrustVector*acceleration*.3
 		var verticalThrustVector = Input.get_axis("VerticalDown","VerticalUp")
 		frameVelocity.y += verticalThrustVector*acceleration*.5
+		#Velocity Pointer Arrow
+		$Arrow.look_at($Arrow.global_transform.origin + velocity,Vector3.UP)
+		
 		#Dampening
 		if dampeners:
-			#Converts universal velocity back to ship-local velocity
-			print(rotation)
-			print(velocity)
-			var shipLocalVelocity = velocity.rotated(Vector3(0,1,0),-rotation.y).rotated(Vector3(1,0,0),-rotation.x).rotated(Vector3(0,0,1),-rotation.z)
-			print(shipLocalVelocity)
-			if shipLocalVelocity.z != 0 and frameVelocity.z == 0:
-				frameVelocity.z -= shipLocalVelocity.z - move_toward(shipLocalVelocity.z,0,acceleration)
-			if shipLocalVelocity.x != 0 and frameVelocity.x == 0:
-				frameVelocity.x -= shipLocalVelocity.x - move_toward(shipLocalVelocity.x,0,acceleration*.3)
-			if shipLocalVelocity.y != 0 and frameVelocity.y == 0:
-				frameVelocity.y -= shipLocalVelocity.y - move_toward(shipLocalVelocity.y,0,acceleration*.5) 
+			var localVelocityAngle = $Arrow.rotation 
+			print($Arrow.rotation)
+			if 1.5*PI > localVelocityAngle.y and localVelocityAngle.y > .5*PI and frameVelocity.z == 0:
+				print("test"+ str(2.0*(.5 - abs((localVelocityAngle.y/PI)-1.0)) * acceleration))
+				frameVelocity.z -= 2.0*(.5 - abs((localVelocityAngle.y/PI)-1.0)) * acceleration
+			elif localVelocityAngle.y < .5 * PI and localVelocityAngle.y > -.5* PI and frameVelocity.z == 0:
+				frameVelocity.z += 2.0*(.5 - abs((localVelocityAngle.y/PI))) * acceleration
+			if localVelocityAngle.y > 0 and localVelocityAngle.y < PI and frameVelocity.x == 0:
+				frameVelocity.x += 2.0*(.5 - abs((localVelocityAngle.y/PI)-.5)) * acceleration*.3
+			elif localVelocityAngle.y < 0 and localVelocityAngle.y > -1.0*PI and frameVelocity.x == 0:
+				frameVelocity.x -= 2.0*(.5 - abs((localVelocityAngle.y/PI)+.5)) * acceleration*.3
+			if localVelocityAngle.x > 0 and localVelocityAngle.x < PI and frameVelocity.y == 0:
+				frameVelocity.y -= 2.0*(.5 - abs((localVelocityAngle.x/PI)-.5)) * acceleration*.5
+			elif localVelocityAngle.x < 0 and localVelocityAngle.x > -1.0*PI and frameVelocity.y == 0:
+				frameVelocity.y += 2.0*(.5 - abs((localVelocityAngle.x/PI)+.5)) * acceleration*.5
 		#Rotates frame velocity to universal frame of reference
 		#This rotation vector breaks everything:
 		#(-0.724, 1.26, -1.29)
@@ -128,6 +140,7 @@ func _physics_process(delta):
 		frameVelocity = frameVelocity.rotated(Vector3(0,1,0),rotation.y).rotated(Vector3(1,0,0),rotation.x).rotated(Vector3(0,0,1),rotation.z)
 		#Applies frame velocity to velocity
 		velocity += frameVelocity
+		velocity = velocity.limit_length(maxSpeed)
 		#Apply velocity to position
 		position += velocity
 	

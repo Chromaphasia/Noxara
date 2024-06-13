@@ -1,23 +1,25 @@
 ea4bc82a6ad023ab7ee23ee620429895
-::res://::1717545040
+::res://::1718310126
 icon.svg::CompressedTexture2D::4943639326799894512::1717140445::1717140457::1::::<><>::
 ::res://Assets/::1717543907
 ::res://Assets/2d Assets/::1717543911
 ::res://Assets/2d Assets/Ship Assets/::1717543915
 ::res://Assets/2d Assets/Ship Assets/Internals/::1717543964
 throttleGauge.png::CompressedTexture2D::8892106431834281260::1717543948::1717543964::1::::<><>::
-::res://Assets/Blender Files/::1717538606
+::res://Assets/Blender Files/::1717639857
 ::res://Assets/Debug/::1717200564
 reference.png::CompressedTexture2D::8318367158667343113::1717200558::1717200564::1::::<><>::
-::res://Assets/Models/::1717536172
+::res://Assets/Models/::1717623087
+::res://Assets/Models/Misc/::1717623093
+Arrow.glb::PackedScene::4922095780591892876::1717623091::1717623093::1::::<><>::
 ::res://Assets/Models/Ships/::1717536177
 ::res://Assets/Models/Ships/Internals/::1717538608
 debugCockpit.glb::PackedScene::7545698718542850308::1717538603::1717538608::1::::<><>::
 ::res://Scenes/::1717141286
-::res://Scenes/Main Scenes/::1717544865
-system.tscn::PackedScene::8089415986143081266::1717544865::0::1::::<><>::res://Scripts/Player Scripts/PlayerShip.gd<>uid://dfrgs5dtg7nvg::::res://Assets/Models/Ships/Internals/debugCockpit.glb<>uid://dyxnxuaki0qoi::::res://Assets/2d Assets/Ship Assets/Internals/throttleGauge.png
+::res://Scenes/Main Scenes/::1717757932
+system.tscn::PackedScene::8089415986143081266::1717757932::0::1::::<><>::res://Scripts/Player Scripts/PlayerShip.gd<>uid://dfrgs5dtg7nvg::::res://Assets/Models/Ships/Internals/debugCockpit.glb<>uid://ccekg0ldha1au::::res://Assets/Models/Misc/Arrow.glb
 ::res://Scripts/::1717177252
 ::res://Scripts/Autoload/::1717189407
 options.gd::GDScript::-1::1717189407::0::1::::<>Node<>::
-::res://Scripts/Player Scripts/::1717544030
-PlayerShip.gd::GDScript::-1::1717544030::0::1::::<>CharacterBody3D<>::
+::res://Scripts/Player Scripts/::1717757932
+PlayerShip.gd::GDScript::-1::1717757932::0::1::::<>CharacterBody3D<>::

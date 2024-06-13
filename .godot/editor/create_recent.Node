@@ -1,8 +1,8 @@
+MeshInstance3D
 OmniLight3D
 Label
 RichTextLabel
 Sprite3D
-MeshInstance3D
 Sprite2D
 SubViewport
 Camera3D
