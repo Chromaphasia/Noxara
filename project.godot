@@ -19,6 +19,10 @@ config/icon="res://icon.svg"
 
 Options="*res://Scripts/Autoload/options.gd"
 
+[display]
+
+window/size/mode=3
+
 [filesystem]
 
 import/fbx/enabled=false
@@ -103,3 +107,11 @@ TrueThrottleNeg={
 "deadzone": 0.5,
 "events": []
 }
+
+[layer_names]
+
+2d_physics/layer_13="Radar Icons"
+
+[rendering]
+
+textures/canvas_textures/default_texture_filter=0
