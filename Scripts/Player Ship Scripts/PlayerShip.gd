@@ -12,6 +12,9 @@ var dampeners: bool
 var safeMode: bool
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
+const horizontalThrustRatio = .5
+const verticalThrustRatio = .7
+
 
 func _ready():
 	#Fixes debug message spam from look_at function
@@ -91,19 +94,20 @@ func _process(delta):
 	var secondGimbal = $"Gimbal/First Gimbal/Second Gimbal"
 	if !currentTarget:
 		if floor(velocity.length()*100) != 0: 
-			firstGimbal.rotation.x = $Arrow.rotation.y
-			secondGimbal.rotation.x = -$Arrow.rotation.x
+			firstGimbal.rotation.x = move_toward(firstGimbal.rotation.x,$Arrow.rotation.y,abs(firstGimbal.rotation.x - $Arrow.rotation.y)*.5)
+			secondGimbal.rotation.x = move_toward(secondGimbal.rotation.x,-$Arrow.rotation.x,abs(secondGimbal.rotation.x+$Arrow.rotation.x)*.5)
+			#firstGimbal.rotation.x = $Arrow.rotation.y
+			#secondGimbal.rotation.x = -$Arrow.rotation.x
 		#$"Gimbal/First Gimbal/Second Gimbal/Third Gimbal".rotation.x = $Arrow.rotation.z
 		else:
-			firstGimbal.rotation.x = 0
-			secondGimbal.rotation.x = 0
+			firstGimbal.rotation.x = move_toward(firstGimbal.rotation.x, 0, abs(firstGimbal.rotation.x*.5))
+			secondGimbal.rotation.x = move_toward(secondGimbal.rotation.x, 0, abs(secondGimbal.rotation.x*.5))
 	else:
 		$hiddenTargeter.look_at(currentTarget.position)
 		firstGimbal.rotation.x = move_toward(firstGimbal.rotation.x, $hiddenTargeter.rotation.y,abs(firstGimbal.rotation.x-$hiddenTargeter.rotation.y)*.5)
-		secondGimbal.rotation.x = move_toward(secondGimbal.rotation.x, -$hiddenTargeter.rotation.x,abs(firstGimbal.rotation.x+$hiddenTargeter.rotation.x)*.5)
+		secondGimbal.rotation.x = move_toward(secondGimbal.rotation.x, -$hiddenTargeter.rotation.x,abs(secondGimbal.rotation.x+$hiddenTargeter.rotation.x)*.5)
 		
 	if Input.is_action_just_pressed("Target"):
-		print("Arrow Transform:" + str($Arrow.transform.basis))
 		var previousTarget = currentTarget
 		for node in objectsInRange:
 			var trueRotation = position.direction_to(node.position)
@@ -125,6 +129,12 @@ var rotationalVelocity := Vector3()
 var printTimer = 0.0
 
 func _physics_process(delta):
+	#Establishes rotated velocity
+	var tempQuat = Quaternion(velocity.x,velocity.y,velocity.z,0)
+	tempQuat = quaternion.inverse()*tempQuat*quaternion
+	var rotatedVelocity = Vector3(tempQuat.x,tempQuat.y,tempQuat.z)
+	#print("Rotated Velocity: "+ str(rotatedVelocity))
+	tempQuat = null
 	printTimer += delta
 	#Const for converting between the pixels of mouse movement into radians. This is converting from a rather large number to a very small one.
 	const mouseVelocityAdjustment = .01
@@ -200,46 +210,56 @@ func _physics_process(delta):
 			frameVelocity.z += throttleAmount*acceleration
 		else:
 			var localVelocityAngle = $Arrow.rotation
-			if localVelocityAngle.y < .5 * PI and localVelocityAngle.y > -.5* PI:
-				if velocity.length() < abs(maxSpeed*throttleAmount):
+			#print("Rotated Velocity Z: " + str(-rotatedVelocity.z*GlobalFunctions.roundAway(throttleAmount)) + "<"+str(maxSpeed*throttleAmount))
+			if -rotatedVelocity.z*sign(throttleAmount) < maxSpeed*abs(throttleAmount):
+				if !(-rotatedVelocity.z*sign(throttleAmount) > 0 and velocity.length() > maxSpeed*1.25): 
 					frameVelocity.z = -move_toward(frameVelocity.z, maxSpeed*throttleAmount,acceleration)
-			else:
-				frameVelocity.z = -move_toward(frameVelocity.z, maxSpeed*throttleAmount,acceleration)
+			
 		#Horizontal and vertical thrust
 		var horizontalThrustVector = Input.get_axis("HorizontalDown","HorizontalUp")
-		frameVelocity.x += horizontalThrustVector*acceleration*.3
+		print("Rotated Velocity X: "+str(rotatedVelocity.x)+"<"+str(maxSpeed*horizontalThrustVector))
+		if rotatedVelocity.x*GlobalFunctions.roundAway(horizontalThrustVector) < maxSpeed:
+			if !(-rotatedVelocity.x*sign(throttleAmount) > 0 and velocity.length() > maxSpeed*1.25): 
+				frameVelocity.x += horizontalThrustVector*acceleration*horizontalThrustRatio
 		var verticalThrustVector = Input.get_axis("VerticalDown","VerticalUp")
-		frameVelocity.y += verticalThrustVector*acceleration*.5
+		if rotatedVelocity.y*GlobalFunctions.roundAway(verticalThrustVector) < maxSpeed:
+			if !(-rotatedVelocity.y*sign(throttleAmount) > 0 and velocity.length() > maxSpeed*1.25): 
+				frameVelocity.y += verticalThrustVector*acceleration*verticalThrustRatio
 		#Velocity Pointer Arrow
 		
 		$Arrow.look_at($Arrow.global_transform.origin + velocity*20,Vector3(.7,.3,0).normalized())
 		
 		#Dampening
 		
-		if !dampeners and floor(velocity.length()*100) != 0:
+		if dampeners and floor(velocity.length()*100) != 0:
 			var localVelocityAngle = $Arrow.rotation 
 			printTimer = 0
-			print($Arrow.rotation)
-			print("Frame Velocity Z :"+str(frameVelocity.z))
-			if ((1.1*PI >= localVelocityAngle.y and localVelocityAngle.y >.5*PI) or (-1.1*PI <= localVelocityAngle.y and localVelocityAngle.y <-0.5*PI)) and frameVelocity.z == 0:
-			#if 1.5*PI > localVelocityAngle.y and localVelocityAngle.y > .5*PI and frameVelocity.z == 0:
-				print("Moving Forwards: "+ str(2000.0*(.5 - abs((localVelocityAngle.y/PI)-1.0)) * acceleration))
+			#print($Arrow.rotation)
+			#print("Frame Velocity Z :"+str(frameVelocity.z))
+			if rotatedVelocity.z > 0 and frameVelocity.z == 0:
+			#if ((1.1*PI >= localVelocityAngle.y and localVelocityAngle.y >.5*PI) or (-1.1*PI <= localVelocityAngle.y and localVelocityAngle.y <-0.5*PI)) and frameVelocity.z == 0:
+				#print("Moving Forwards: "+ str(2000.0*(.5 - abs((localVelocityAngle.y/PI)-1.0)) * acceleration))
 				frameVelocity.z -= 2.0*(.5 - abs((abs(localVelocityAngle.y)/PI)-1.0)) * acceleration
-			elif localVelocityAngle.y < .5 * PI and localVelocityAngle.y > -.5* PI and frameVelocity.z == 0:
-				print("Moving Backwards: " + str(2000.0*(.5 - abs((localVelocityAngle.y/PI))) * acceleration))
+			elif rotatedVelocity.z < 0 and frameVelocity.z == 0:
+			#elif localVelocityAngle.y < .5 * PI and localVelocityAngle.y > -.5* PI and frameVelocity.z == 0:
+				#print("Moving Backwards: " + str(2000.0*(.5 - abs((localVelocityAngle.y/PI))) * acceleration))
 				frameVelocity.z += 2.0*(.5 - abs((localVelocityAngle.y/PI))) * acceleration
-			if localVelocityAngle.y > 0 and localVelocityAngle.y < PI and frameVelocity.x == 0:
+			if rotatedVelocity.x > 0 and frameVelocity.x == 0:
+			#if localVelocityAngle.y > 0 and localVelocityAngle.y < PI and frameVelocity.x == 0:
 				print("Moving Right: "+ str(2000.0*(.5 - abs((localVelocityAngle.y/PI)-.5)) * acceleration*.3))
-				frameVelocity.x += 2.0*(.5 - abs((localVelocityAngle.y/PI)-.5)) * acceleration*.3
-			elif localVelocityAngle.y < 0 and localVelocityAngle.y > -1.0*PI and frameVelocity.x == 0:
+				frameVelocity.x += 2.0*(.5 - abs((localVelocityAngle.y/PI)-.5)) * acceleration*horizontalThrustRatio
+			elif rotatedVelocity.x < 0 and frameVelocity.x == 0:
+			#elif localVelocityAngle.y < 0 and localVelocityAngle.y > -1.0*PI and frameVelocity.x == 0:
 				print("Moving Left: "+ str(2000.0*(.5 - abs((localVelocityAngle.y/PI)+.5)) * acceleration*.3))
-				frameVelocity.x -= 2.0*(.5 - abs((localVelocityAngle.y/PI)+.5)) * acceleration*.3
-			if localVelocityAngle.x > 0 and localVelocityAngle.x < PI and frameVelocity.y == 0:
+				frameVelocity.x -= 2.0*(.5 - abs((localVelocityAngle.y/PI)+.5)) * acceleration*horizontalThrustRatio
+			if rotatedVelocity.y > 0 and frameVelocity.y == 0:
+			#if localVelocityAngle.x > 0 and localVelocityAngle.x < PI and frameVelocity.y == 0:
 				print("Moving Down: "+ str(2000.0*(.5 - abs((localVelocityAngle.x/PI)-.5)) * acceleration*.5))
-				frameVelocity.y -= 2.0*(.5 - abs((localVelocityAngle.x/PI)-.5)) * acceleration*.5
-			elif localVelocityAngle.x < 0 and localVelocityAngle.x > -1.0*PI and frameVelocity.y == 0:
+				frameVelocity.y -= 2.0*(.5 - abs((localVelocityAngle.x/PI)-.5)) * acceleration*verticalThrustRatio
+			elif rotatedVelocity.y < 0 and frameVelocity.y == 0:
+			#elif localVelocityAngle.x < 0 and localVelocityAngle.x > -1.0*PI and frameVelocity.y == 0:
 				print("Moving Up: "+ str(2000.0*(.5 - abs((localVelocityAngle.x/PI)+.5)) * acceleration*.5))
-				frameVelocity.y += 2.0*(.5 - abs((localVelocityAngle.x/PI)+.5)) * acceleration*.5
+				frameVelocity.y += 2.0*(.5 - abs((localVelocityAngle.x/PI)+.5)) * acceleration*verticalThrustRatio
 		#Rotates frame velocity to universal frame of reference
 		#This rotation vector breaks everything:
 		#(-0.724, 1.26, -1.29)
@@ -250,11 +270,11 @@ func _physics_process(delta):
 		frameVelocity = Vector3(frameVelocityQuaternion.x,frameVelocityQuaternion.y,frameVelocityQuaternion.z)
 		#Applies frame velocity to velocity
 		velocity += frameVelocity
-		velocity = velocity.limit_length(maxSpeed)
+		#velocity = velocity.limit_length(maxSpeed)
 		#Apply velocity to position
 		position += velocity
 	
 	#Update UI on Console
 	var speed = floor(velocity.length()*100)
 	
-	$SubViewport/HBoxContainer/Label.text = "Speed: "+str(speed)+"\nThrottle: "+str(throttleAmount*100)+"%"
+	$SubViewport/HBoxContainer/Label.text = "Speed: "+str(floor(speed))+"\nThrottle: "+str(floor(throttleAmount*100))+"%"

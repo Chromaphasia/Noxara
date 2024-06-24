@@ -1,3 +1,4 @@
 res://Scenes/Main Scenes/system.tscn
 res://Scripts/Player Ship Scripts/PlayerShip.gd
 res://credits.txt
+res://Scripts/Autoload/global_functions.gd

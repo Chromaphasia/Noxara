@@ -18,6 +18,11 @@ config/icon="res://icon.svg"
 [autoload]
 
 Options="*res://Scripts/Autoload/options.gd"
+GlobalFunctions="*res://Scripts/Autoload/global_functions.gd"
+
+[display]
+
+window/size/mode=3
 
 [filesystem]
 
