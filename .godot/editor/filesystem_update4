@@ -1,6 +1,3 @@
 res://Scenes/Main Scenes/system.tscn
-res://Scripts/Player Scripts/PlayerShip.gd
-res://Scripts/Space Objects/BaseObject.gd
-res://Scenes/Instanced Scenes/Space Objects/Ships/Ship Internals/radar_icon.tscn
-res://Scripts/Player Ship Scripts/radar_icon.gd
 res://Scripts/Player Ship Scripts/PlayerShip.gd
+res://credits.txt

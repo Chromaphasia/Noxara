@@ -39,7 +39,7 @@ var pingsSinceLastCheck = 5
 var objectsInRange = []
 func radarPing():
 	pingsSinceLastCheck += 1
-	print("ping")
+	#print("ping")
 	if pingsSinceLastCheck >= 5:
 		pingsSinceLastCheck = 0
 		for node in get_tree().get_nodes_in_group("Radar Objects"):
@@ -64,10 +64,10 @@ func radarPing():
 				radarIconNode.frame = 2
 			radarIconNode.radarRange = radarRange
 			var relativePosition = node.position-position
-			print(node.name+" Relative Position: "+str(relativePosition))
+			#print(node.name+" Relative Position: "+str(relativePosition))
 			var tempQuat = Quaternion(relativePosition.x,relativePosition.y,relativePosition.z,0)
 			var rotatedQuat = quaternion.inverse() * tempQuat * quaternion
-			print("Rotated Position: "+ str(rotatedQuat))
+			#print("Rotated Position: "+ str(rotatedQuat))
 			radarIconNode.relativePosition = Vector3(rotatedQuat.x,rotatedQuat.y,rotatedQuat.z)
 			radarIconNode.initIcon()
 			$SubViewport/HBoxContainer/PanelContainer/RadarSprite.add_child(radarIconNode)
@@ -78,16 +78,47 @@ func radarPing():
 	#pingTween.tween_property($SubViewport/HBoxContainer/PanelContainer/RadarSprite,"frame",0,0.01)
 	#pingTween.tween_callback($SubViewport/HBoxContainer/PanelContainer/RadarSprite.stop)
 
-
+var currentTarget
 var radarTimer = 0
 func _process(delta):
+	#print(currentTarget)
 	#print($SubViewport/HBoxContainer/PanelContainer/RadarSprite/Spinner.rotation)
 	radarTimer -= delta
 	if radarTimer <= 0:
 		radarTimer = radarRefreshSpeed
 		radarPing()
-
-
+	var firstGimbal = $"Gimbal/First Gimbal"
+	var secondGimbal = $"Gimbal/First Gimbal/Second Gimbal"
+	if !currentTarget:
+		if floor(velocity.length()*100) != 0: 
+			firstGimbal.rotation.x = $Arrow.rotation.y
+			secondGimbal.rotation.x = -$Arrow.rotation.x
+		#$"Gimbal/First Gimbal/Second Gimbal/Third Gimbal".rotation.x = $Arrow.rotation.z
+		else:
+			firstGimbal.rotation.x = 0
+			secondGimbal.rotation.x = 0
+	else:
+		$hiddenTargeter.look_at(currentTarget.position)
+		firstGimbal.rotation.x = move_toward(firstGimbal.rotation.x, $hiddenTargeter.rotation.y,abs(firstGimbal.rotation.x-$hiddenTargeter.rotation.y)*.5)
+		secondGimbal.rotation.x = move_toward(secondGimbal.rotation.x, -$hiddenTargeter.rotation.x,abs(firstGimbal.rotation.x+$hiddenTargeter.rotation.x)*.5)
+		
+	if Input.is_action_just_pressed("Target"):
+		print("Arrow Transform:" + str($Arrow.transform.basis))
+		var previousTarget = currentTarget
+		for node in objectsInRange:
+			var trueRotation = position.direction_to(node.position)
+			var shipRotationDirection = -transform.basis.z
+			print("Basis: "+ str(transform.basis))
+			print(node.name+": " + str(shipRotationDirection.angle_to(trueRotation)))
+			
+			if abs(shipRotationDirection.angle_to(trueRotation)) < .2*PI:
+				if not currentTarget:
+					currentTarget = node
+				elif abs(shipRotationDirection.angle_to(trueRotation)) < abs(shipRotationDirection.angle_to(position.direction_to(currentTarget.position))):
+					currentTarget = node
+		
+		if currentTarget == previousTarget:
+			currentTarget = null
 var throttleAmount := 0.0
 const throttleRateOfChange = .01
 var rotationalVelocity := Vector3()
@@ -185,7 +216,7 @@ func _physics_process(delta):
 		
 		#Dampening
 		
-		if dampeners and floor(velocity.length()*100) != 0:
+		if !dampeners and floor(velocity.length()*100) != 0:
 			var localVelocityAngle = $Arrow.rotation 
 			printTimer = 0
 			print($Arrow.rotation)

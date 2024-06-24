@@ -1,3 +1,7 @@
+OmniLight3D
+DirectionalLight3D
+WorldEnvironment
+Node3D
 Node2D
 Sprite2D
 CollisionShape2D
@@ -7,9 +11,4 @@ PanelContainer
 Panel
 HBoxContainer
 MeshInstance3D
-OmniLight3D
 Label
-RichTextLabel
-Sprite3D
-SubViewport
-Camera3D

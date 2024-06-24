@@ -1,37 +1,42 @@
 ea4bc82a6ad023ab7ee23ee620429895
-::res://::1718846137
+::res://::1719206221
+credits.txt::TextFile::-1::1719206221::0::1::::<><>::
 icon.svg::CompressedTexture2D::4943639326799894512::1717140445::1717140457::1::::<><>::
 ::res://Assets/::1717543907
-::res://Assets/2d Assets/::1717543911
+::res://Assets/2d Assets/::1719207522
+::res://Assets/2d Assets/Environments/::1719207532
+tempSkybox.png::CompressedTexture2D::5981308681373863285::1719207532::1719207541::1::::<><>::
 ::res://Assets/2d Assets/Ship Assets/::1717543915
-::res://Assets/2d Assets/Ship Assets/Internals/::1718847638
+::res://Assets/2d Assets/Ship Assets/Internals/::1718847720
 Radar.png::CompressedTexture2D::2492861616449416853::1718831942::1718831944::1::::<><>::
 radarIcons.png::CompressedTexture2D::4502134385844765868::1718839634::1718839638::1::::<><>::
 radarIconSheet.png::CompressedTexture2D::5778838533826004094::1718839636::1718839638::1::::<><>::
 RadarSheet.png::CompressedTexture2D::4286242969316858000::1718847716::1718847720::1::::<><>::
 throttleGauge.png::CompressedTexture2D::8892106431834281260::1717543948::1717543964::1::::<><>::
-::res://Assets/Blender Files/::1717639857
+::res://Assets/Blender Files/::1718922947
 ::res://Assets/Debug/::1717200564
 reference.png::CompressedTexture2D::8318367158667343113::1717200558::1717200564::1::::<><>::
 ::res://Assets/Models/::1717623087
 ::res://Assets/Models/Misc/::1717623093
 Arrow.glb::PackedScene::4922095780591892876::1717623091::1717623093::1::::<><>::
 ::res://Assets/Models/Ships/::1717536177
-::res://Assets/Models/Ships/Internals/::1717538608
+::res://Assets/Models/Ships/Internals/::1718922963
 debugCockpit.glb::PackedScene::7545698718542850308::1717538603::1717538608::1::::<><>::
+Gimbal.glb::PackedScene::7258946650257088125::1718922951::1718922953::1::::<><>::
 ::res://Scenes/::1718839495
 ::res://Scenes/Instanced Scenes/::1718839507
 ::res://Scenes/Instanced Scenes/Space Objects/::1718839510
 ::res://Scenes/Instanced Scenes/Space Objects/Ships/::1718839514
-::res://Scenes/Instanced Scenes/Space Objects/Ships/Ship Internals/::1718846192
-radar_icon.tscn::PackedScene::1171813921380492030::1718846192::0::1::::<><>::uid://colkvkcgm7gda::::res://Assets/2d Assets/Ship Assets/Internals/radarIconSheet.png<>res://Scripts/Player Ship Scripts/radar_icon.gd
-::res://Scenes/Main Scenes/::1718845995
-system.tscn::PackedScene::8089415986143081266::1718845995::0::1::::<><>::res://Scripts/Player Ship Scripts/PlayerShip.gd<>uid://dfrgs5dtg7nvg::::res://Assets/Models/Ships/Internals/debugCockpit.glb<>uid://ccekg0ldha1au::::res://Assets/Models/Misc/Arrow.glb<>uid://b2cj2btof08hg::::res://Assets/2d Assets/Ship Assets/Internals/RadarSheet.png<>res://Scripts/Space Objects/BaseObject.gd<>uid://qxvusk2fp103::::res://Scenes/Instanced Scenes/Space Objects/Ships/Ship Internals/radar_icon.tscn
+::res://Scenes/Instanced Scenes/Space Objects/Ships/Ship Internals/::1718917756
+Gimbal.tscn::PackedScene::9184401462980174878::1718917756::0::1::::<><>::
+radar_icon.tscn::PackedScene::1171813921380492030::1718850918::0::1::::<><>::uid://colkvkcgm7gda::::res://Assets/2d Assets/Ship Assets/Internals/radarIconSheet.png<>res://Scripts/Player Ship Scripts/radar_icon.gd
+::res://Scenes/Main Scenes/::1719206221
+system.tscn::PackedScene::8089415986143081266::1719206221::0::1::::<><>::res://Scripts/Player Ship Scripts/PlayerShip.gd<>uid://dfrgs5dtg7nvg::::res://Assets/Models/Ships/Internals/debugCockpit.glb<>uid://ccekg0ldha1au::::res://Assets/Models/Misc/Arrow.glb<>uid://b2cj2btof08hg::::res://Assets/2d Assets/Ship Assets/Internals/RadarSheet.png<>res://Scripts/Space Objects/BaseObject.gd<>uid://dboj15e8urd1v::::res://Assets/Models/Ships/Internals/Gimbal.glb
 ::res://Scripts/::1718839737
 ::res://Scripts/Autoload/::1717189407
 options.gd::GDScript::-1::1717189407::0::1::::<>Node<>::
-::res://Scripts/Player Ship Scripts/::1718846166
-PlayerShip.gd::GDScript::-1::1718844853::0::1::::PlayerShip<>CharacterBody3D<>::
-radar_icon.gd::GDScript::-1::1718846166::0::1::::<>AnimatedSprite2D<>::
+::res://Scripts/Player Ship Scripts/::1719204290
+PlayerShip.gd::GDScript::-1::1719204290::0::1::::PlayerShip<>CharacterBody3D<>::
+radar_icon.gd::GDScript::-1::1718850116::0::1::::<>AnimatedSprite2D<>::
 ::res://Scripts/Space Objects/::1718830111
 BaseObject.gd::GDScript::-1::1718830111::0::1::::SpaceObject<>MeshInstance3D<>::
