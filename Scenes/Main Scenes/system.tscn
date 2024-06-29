@@ -1,12 +1,14 @@
-[gd_scene load_steps=99 format=3 uid="uid://dnitq8k68qlaw"]
+[gd_scene load_steps=100 format=3 uid="uid://dnitq8k68qlaw"]
 
 [ext_resource type="Script" path="res://Scripts/Player Ship Scripts/PlayerShip.gd" id="1_jy8hd"]
 [ext_resource type="Texture2D" uid="uid://crhnjr2erlr5n" path="res://Assets/2d Assets/Environments/tempSkybox.png" id="1_uv1bx"]
 [ext_resource type="PackedScene" uid="uid://dfrgs5dtg7nvg" path="res://Assets/Models/Ships/Internals/debugCockpit.glb" id="2_ogakp"]
 [ext_resource type="PackedScene" uid="uid://ccekg0ldha1au" path="res://Assets/Models/Misc/Arrow.glb" id="2_ook1m"]
 [ext_resource type="Texture2D" uid="uid://b2cj2btof08hg" path="res://Assets/2d Assets/Ship Assets/Internals/RadarSheet.png" id="4_jlva1"]
-[ext_resource type="Script" path="res://Scripts/Space Objects/BaseObject.gd" id="4_unn25"]
 [ext_resource type="PackedScene" uid="uid://dboj15e8urd1v" path="res://Assets/Models/Ships/Internals/Gimbal.glb" id="5_j6rwr"]
+[ext_resource type="Script" path="res://Scripts/Space Objects/BaseObject.gd" id="7_qwti2"]
+[ext_resource type="PackedScene" uid="uid://ck8v7k7cp0r62" path="res://Assets/Models/Stations/RingStation1.glb" id="8_8xi34"]
+[ext_resource type="Script" path="res://Scripts/Space Objects/RingStation.gd" id="9_pccgw"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_x2adb"]
 panorama = ExtResource("1_uv1bx")
@@ -599,13 +601,9 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qxesr"]
 size = Vector2(1, 40)
 
-[sub_resource type="TorusMesh" id="TorusMesh_m0fro"]
-inner_radius = 10.137
-outer_radius = 11.73
+[sub_resource type="SphereMesh" id="SphereMesh_3em8n"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_jh88f"]
-
-[sub_resource type="SphereMesh" id="SphereMesh_3em8n"]
 
 [node name="System" type="Node3D"]
 
@@ -613,7 +611,7 @@ outer_radius = 11.73
 environment = SubResource("Environment_xucyj")
 
 [node name="PlayerShip" type="CharacterBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.594238, -0.0448103, -0.675405)
+transform = Transform3D(-0.207064, 0.393862, 0.895543, 0.0887265, 0.919169, -0.383737, -0.974294, 1.57952e-06, -0.225274, 721.497, -0.0449295, -0.675423)
 rotation_edit_mode = 1
 motion_mode = 1
 script = ExtResource("1_jy8hd")
@@ -683,24 +681,26 @@ transform = Transform3D(1.00078e-15, 2.28952e-08, 0.523781, 0.523781, -2.28952e-
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.335, -1.037, -4.434)
 visible = false
 
-[node name="Ring" type="MeshInstance3D" parent="."]
-transform = Transform3D(10, 0, 0, 0, 5.56615, -8.30771, 0, 8.30771, 5.56615, 0, 0, -289.539)
-mesh = SubResource("TorusMesh_m0fro")
-script = ExtResource("4_unn25")
-
-[node name="Cube" type="MeshInstance3D" parent="."]
-transform = Transform3D(126.688, 0, 0, 0, 126.688, 0, 0, 0, 126.688, -360.354, 236.666, 297.276)
-mesh = SubResource("BoxMesh_jh88f")
-script = ExtResource("4_unn25")
-
 [node name="Star" type="MeshInstance3D" parent="."]
-transform = Transform3D(232.6, 0, 0, 0, 232.6, 0, 0, 0, 232.6, 456.827, -276.887, 432.191)
+transform = Transform3D(2091.5, 0, 0, 0, 2091.5, 0, 0, 0, 2091.5, 456.827, 2666.5, 432.191)
 layers = 2
 mesh = SubResource("SphereMesh_3em8n")
-script = ExtResource("4_unn25")
+script = ExtResource("7_qwti2")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="Star"]
 light_energy = 100.0
 light_cull_mask = 4294967293
 shadow_enabled = true
+shadow_bias = 5.049
 omni_range = 4096.0
+
+[node name="Cube" type="MeshInstance3D" parent="Star"]
+transform = Transform3D(0.228723, 0, 0, 0, 0.228723, 0, 0, 0, 0.228723, -0.281797, -1.00219, -0.0645064)
+mesh = SubResource("BoxMesh_jh88f")
+skeleton = NodePath("../..")
+script = ExtResource("7_qwti2")
+
+[node name="RingStation1" parent="Star/Cube" instance=ExtResource("8_8xi34")]
+transform = Transform3D(-0.0306731, 0, -0.0137509, -0.00423809, 0.031978, 0.00945355, 0.0130815, 0.0103601, -0.0291799, 1.39588, -1.19241, -0.621429)
+script = ExtResource("9_pccgw")
+ringRotationSpeed = 0.1

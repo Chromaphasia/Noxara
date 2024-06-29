@@ -1,0 +1,60 @@
+[gd_scene load_steps=9 format=3 uid="uid://dwjmyl0n1cjs4"]
+
+[ext_resource type="Script" path="res://test.gd" id="1_2kj4c"]
+
+[sub_resource type="Environment" id="Environment_74252"]
+ambient_light_source = 2
+ambient_light_color = Color(0.803922, 1, 1, 1)
+
+[sub_resource type="World3D" id="World3D_pcwhk"]
+environment = SubResource("Environment_74252")
+
+[sub_resource type="SphereMesh" id="SphereMesh_y4766"]
+
+[sub_resource type="Environment" id="Environment_jc1yq"]
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+
+[sub_resource type="World3D" id="World3D_q8ygk"]
+environment = SubResource("Environment_jc1yq")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_jqgbu"]
+viewport_path = NodePath("SubViewport")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_7g14b"]
+viewport_path = NodePath("SubViewport2")
+
+[node name="Node3D" type="Node3D"]
+script = ExtResource("1_2kj4c")
+
+[node name="SubViewport" type="SubViewport" parent="."]
+own_world_3d = true
+world_3d = SubResource("World3D_pcwhk")
+
+[node name="Scale" type="MeshInstance3D" parent="SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+mesh = SubResource("SphereMesh_y4766")
+skeleton = NodePath("../..")
+
+[node name="Camera3D" type="Camera3D" parent="SubViewport"]
+
+[node name="SubViewport2" type="SubViewport" parent="."]
+own_world_3d = true
+world_3d = SubResource("World3D_q8ygk")
+
+[node name="Position" type="MeshInstance3D" parent="SubViewport2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+mesh = SubResource("SphereMesh_y4766")
+skeleton = NodePath("../..")
+
+[node name="Camera3D2" type="Camera3D" parent="SubViewport2"]
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.08473, 0, 0)
+texture = SubResource("ViewportTexture_jqgbu")
+
+[node name="Sprite3D2" type="Sprite3D" parent="."]
+texture = SubResource("ViewportTexture_7g14b")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2625, 0, 5.5919)

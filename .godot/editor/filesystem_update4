@@ -1,4 +1,8 @@
+res://Scenes/Main Scenes/system_v2.tscn
+res://Scripts/Space Objects/Star.gd
+res://Assets/Shaders/BlackHole.gdshader
+res://Scripts/Player Ship Scripts/DriveShader.gd
+res://Assets/Shaders/blackHolev2.gdshader
 res://Scenes/Main Scenes/system.tscn
-res://Scripts/Player Ship Scripts/PlayerShip.gd
-res://credits.txt
-res://Scripts/Autoload/global_functions.gd
+res://test.tscn
+res://Scripts/Major Systems/StarSystemController.gd
